@@ -16,6 +16,7 @@ import {
 import calendarIcon from '../Icons/streamlinehq-calendar-interface-essential-48.SVG';
 import shippingBoxIcon from '../Icons/streamlinehq-shipment-box-shipping-delivery-48.SVG';
 import CircledIcon from './CircledIcon';
+import DateInput from './DateInput';
 import LineItem from './LineItem';
 import InvoiceTotalSection from './InvoiceTotalSection';
 import { getPreferences } from '../store/preferences';
@@ -133,7 +134,7 @@ class InvoiceCreateForm extends React.Component {
               </Select>
             </FormControl>
             {this.state.terms === 0 && (
-              <div>date picker input</div>
+              <DateInput />
             )}
           </div>
         </Paper>
