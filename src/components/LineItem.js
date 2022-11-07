@@ -6,16 +6,16 @@ import {
 } from '@mui/material';
 import closeIcon from '../Icons/streamlinehq-close-interface-essential-48.SVG'
 
-const LineItem = ({ ...other }) => {
+const LineItem = ({ itemId, removeLine, ...other }) => {
   return (
     <TableRow className='line-item'>
-      <TableCell>items input</TableCell>
+      <TableCell>items input {itemId}</TableCell>
       <TableCell>description input</TableCell>
       <TableCell align='right' >quantity input</TableCell>
       <TableCell align='right' >price input</TableCell>
       <TableCell align='right' >amount input</TableCell>
       <TableCell className='close-cell'>
-        <Button className='close-button'>
+        <Button className='close-button' onClick={() => removeLine(itemId)} >
           <img src={closeIcon} className='close-icon' />
         </Button>
       </TableCell>
