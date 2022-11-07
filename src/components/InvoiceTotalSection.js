@@ -6,7 +6,19 @@ import {
   ToggleButton
 } from '@mui/material';
 
-const InvoiceTotalSection = ({ showDiscount, showShipping, showTax, discountShown, shippingShown, taxShown, ...other }) => {
+const InvoiceTotalSection = (
+  {
+    showDiscount,
+    showShipping,
+    showTax,
+    discountShown,
+    shippingShown,
+    taxShown,
+    discountType,
+    changeDiscountType,
+    ...other
+  }) => {
+
   return (
     <div className='flex-column invoice-total-section-wrapper'>
       <div className='flex-column invoice-total-section'>
@@ -18,7 +30,10 @@ const InvoiceTotalSection = ({ showDiscount, showShipping, showTax, discountShow
           <div className='flex-row space-between'>
             <div className='label'>Discount</div>
             <div>
-              <ToggleButtonGroup>
+              <ToggleButtonGroup
+                value={discountType}
+                onChange={(e) => changeDiscountType(e.target.value)}
+              >
                 <ToggleButton value="dollar">
                   $
                 </ToggleButton>
@@ -28,7 +43,7 @@ const InvoiceTotalSection = ({ showDiscount, showShipping, showTax, discountShow
               </ToggleButtonGroup>
               <TextField
                 className='input'
-                InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+                InputProps={{ startAdornment: <InputAdornment position="start">{discountType === "dollar" ? "$" : "%"}</InputAdornment> }}
               />
             </div>
           </div>

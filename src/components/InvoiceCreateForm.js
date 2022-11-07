@@ -29,6 +29,7 @@ const initialState = {
   terms: null,
   lineItems: [{ items: null, description: null, quantity: null, price: null, amount: null }],
   discount: null,
+  discountType: "dollar",
   shipping: null,
   tax: null
 }
@@ -44,6 +45,7 @@ class InvoiceCreateForm extends React.Component {
     this.showDiscount = this.showDiscount.bind(this);
     this.showShipping = this.showShipping.bind(this);
     this.showTax = this.showTax.bind(this);
+    this.changeDiscountType = this.changeDiscountType.bind(this);
   }
 
   async componentDidMount() {
@@ -83,6 +85,10 @@ class InvoiceCreateForm extends React.Component {
 
   showTax() {
     this.setState({ taxShown: true });
+  }
+
+  changeDiscountType(value) {
+    this.setState({ discountType: value});
   }
 
   render() {
@@ -174,6 +180,8 @@ class InvoiceCreateForm extends React.Component {
             shippingShown={this.state.shippingShown}
             discountShown={this.state.discountShown}
             taxShown={this.state.taxShown}
+            discountType={this.state.discountType}
+            changeDiscountType={this.changeDiscountType}
           />
         </Paper>
       </div>
