@@ -20,6 +20,7 @@ import DropdownInput from './FormInputs/DropdownInput';
 import { getPreferences } from '../store/preferences';
 import invoiceValidationSchema from '../invoiceValidationSchema';
 import Alert from './Alert';
+import MessageDialog from './MessageDialog';
 
 const initialState = {
   defaultTerms: null,
@@ -47,6 +48,7 @@ const initialState = {
   due_date: null,
   itemsCount: 1,
   hasErrors: false,
+  showSuccess: false,
   errors: {
     payment_terms: false,
     discountType: false,
@@ -66,6 +68,7 @@ class InvoiceCreateForm extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleLineItemChange = this.handleLineItemChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.closeDialog = this.closeDialog.bind(this);
   }
 
   async componentDidMount() {
@@ -99,7 +102,7 @@ class InvoiceCreateForm extends React.Component {
     line_items.find((item, i) => {
       if (item.itemId === itemId) {
         if (item.quantity !== null && item.unit_price !== null) {
-          line_items[i]['amount'] =  parseInt(item.quantity) * parseInt(item.unit_price);
+          line_items[i]['amount'] =  Number(item.quantity) * Number(item.unit_price);
         } else {
           line_items[i]['amount'] = 0.00;
         }
@@ -136,6 +139,10 @@ class InvoiceCreateForm extends React.Component {
     this.setState({ [section]: true });
   }
 
+  closeDialog() {
+    this.setState({ showSuccess: false });
+  }
+
   async handleSubmit(e) {
     e.preventDefault();
 
@@ -144,8 +151,7 @@ class InvoiceCreateForm extends React.Component {
     })
 
     if (isFormValid) {
-      this.setState({ hasErrors: false })
-      console.log('valid!')
+      this.setState({ hasErrors: false, showSuccess: true })
     } else {
       this.setState({ hasErrors: true })
       invoiceValidationSchema.validate(this.state, { abortEarly: false }).catch((err) => {
@@ -261,6 +267,7 @@ class InvoiceCreateForm extends React.Component {
             handleChange={this.handleChange}
           />
         </Paper>
+        <MessageDialog open={this.state.showSuccess} closeDialog={this.closeDialog} />
       </form>
     )
   }

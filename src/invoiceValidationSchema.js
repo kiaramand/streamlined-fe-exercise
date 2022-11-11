@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 const invoiceValidationSchema = yup.object().shape({
   payment_terms: yup.number().required(),
-  due_date: yup.string().when('payment_terms', {
+  due_date: yup.string().nullable().when('payment_terms', {
     is: 0,
     then: yup.string().required()
   }),

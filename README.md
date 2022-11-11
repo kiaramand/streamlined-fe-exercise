@@ -24,6 +24,8 @@ would use mui theme for styling
 
 add accessibility features
 
+add proptypes
+
 ### assumptions
 
 negative totals are okay as it's possible a refund is being issued

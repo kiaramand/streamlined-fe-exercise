@@ -9,7 +9,7 @@ import {
 const calculateTotal = ( discountType, discount, subtotal, shipping, tax ) => {
   let total = subtotal;
   if (discountType === 'percent' && discount > 0) {
-    total = total * discount;
+    total = total * ((100 - discount)/100);
   } else if (discountType === 'dollar') {
     total = total - discount;
   }
@@ -19,7 +19,7 @@ const calculateTotal = ( discountType, discount, subtotal, shipping, tax ) => {
 const calculateSubtotal = ( line_items ) => {
   return line_items.reduce((prev, curr) => {
     if (curr.amount !== null) {
-      return prev + parseInt(curr.amount);
+      return prev + Number(curr.amount);
     }
     return prev;
   }, 0)
@@ -71,7 +71,7 @@ const InvoiceTotalSection = (
                 className='input'
                 type='number'
                 inputProps={{ min: 0 }}
-                onChange={(e) => handleChange({ value: parseInt(e.target.value), name: 'discount'})}
+                onChange={(e) => handleChange({ value: Number(e.target.value), name: 'discount'})}
                 InputProps={{ startAdornment: <InputAdornment position="start">{discountType === "dollar" ? "$" : "%"}</InputAdornment> }}
               />
             </div>
@@ -91,7 +91,7 @@ const InvoiceTotalSection = (
               size='small'
               className='input'
               type='number'
-              onChange={(e) => handleChange({ value: parseInt(e.target.value), name: 'shipping' })}
+              onChange={(e) => handleChange({ value: Number(e.target.value), name: 'shipping' })}
               inputProps={{ min: 0 }}
               InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
             />
@@ -111,7 +111,7 @@ const InvoiceTotalSection = (
               size='small'
               className='input'
               type='number'
-              onChange={(e) => handleChange({ value: parseInt(e.target.value), name: 'tax' })}
+              onChange={(e) => handleChange({ value: Number(e.target.value), name: 'tax' })}
               inputProps={{ min: 0 }}
               InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
             />

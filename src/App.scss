@@ -44,6 +44,20 @@ $light-red: #fad1c1;
   }
 }
 
+.message-dialog {
+  padding: 50px 80px 80px 80px;
+  width: 350px;
+  align-items: center;
+}
+
+.dialog-title {
+  text-align: right;
+  .close-button {
+    width: 10px;
+    min-width: none;
+  }
+}
+
 .close-icon {
   height: 10px;
   width: 10px;
@@ -66,6 +80,13 @@ $light-red: #fad1c1;
   }
 }
 
+.alert {
+  padding: 10px;
+  margin-top: 30px;
+  box-shadow: 0px 5px 8px #d8dde3;
+  border-radius: 2px;
+}
+
 .alert-error {
   border-left: $red 10px solid !important;
 }
@@ -73,6 +94,11 @@ $light-red: #fad1c1;
 .icon {
   width: 20px;
   height: 20px;
+}
+
+.icon-large {
+  width: 40px;
+  height: 40px;
 }
 
 .status {

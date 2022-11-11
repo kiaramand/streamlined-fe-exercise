@@ -6,7 +6,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import * as dayjs from 'dayjs';
 
 const DateInput = ({ due_date, handleChange, error, ...other }) => {
-  console.log(error)
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker

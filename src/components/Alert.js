@@ -7,7 +7,7 @@ const Alert = ({ type, ...other }) => {
   return (
     <Paper
       variant='outlined'
-      className={`flex-row form-container alert alert-${type}`}
+      className={`flex-row alert alert-${type}`}
     >
       <CircledIcon iconSrc={alertIcon} status={type} />
       <div>Form contains error. Please correct them and try again.</div>
