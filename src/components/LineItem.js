@@ -12,13 +12,16 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
     <TableRow className='line-item'>
       <TableCell>
         <TextField
+          size='small'
           name='name'
           value={item.name}
+          error={item.errors['name']}
           onChange={(e) => handleLineItemChange(item.itemId, e.target)}
         />
       </TableCell>
       <TableCell>
         <TextField
+          size='small'
           name='description'
           value={item.description}
           onChange={(e) => handleLineItemChange(item.itemId, e.target)}
@@ -26,8 +29,10 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
       </TableCell>
       <TableCell align='right' >
         <TextField
+          size='small'
           name='quantity'
           type='number'
+          error={item.errors['quantity']}
           inputProps={{min: 0, step: 1}}
           value={item.quantity}
           onChange={(e) => {
@@ -38,8 +43,10 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
       </TableCell>
       <TableCell align='right' >
         <TextField
+          size='small'
           name='unit_price'
           type='number'
+          error={item.errors['unit_price']}
           inputProps={{ min: 0 }}
           value={item.unit_price}
           onChange={(e) => {

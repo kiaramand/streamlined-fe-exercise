@@ -16,8 +16,8 @@ const calculateTotal = ( discountType, discount, subtotal, shipping, tax ) => {
   return total + tax + shipping;
 }
 
-const calculateSubtotal = ( lineItems ) => {
-  return lineItems.reduce((prev, curr) => {
+const calculateSubtotal = ( line_items ) => {
+  return line_items.reduce((prev, curr) => {
     if (curr.amount !== null) {
       return prev + parseInt(curr.amount);
     }
@@ -35,12 +35,12 @@ const InvoiceTotalSection = (
     discount,
     shipping,
     tax,
-    lineItems,
+    line_items,
     handleChange,
     ...other
   }) => {
 
-  const subtotal = calculateSubtotal(lineItems)
+  const subtotal = calculateSubtotal(line_items)
 
   return (
     <div className='flex-column invoice-total-section-wrapper'>
@@ -54,6 +54,7 @@ const InvoiceTotalSection = (
             <div className='label'>Discount</div>
             <div>
               <ToggleButtonGroup
+                className='toggle-group'
                 value={discountType}
                 onChange={(e) => handleChange({value: e.target.value, name: 'discountType'})}
                 size='small'
@@ -66,6 +67,7 @@ const InvoiceTotalSection = (
                 </ToggleButton>
               </ToggleButtonGroup>
               <TextField
+                size='small'
                 className='input'
                 type='number'
                 inputProps={{ min: 0 }}
@@ -86,6 +88,7 @@ const InvoiceTotalSection = (
           <div className='flex-row space-between'>
             <div className='label'>shipping</div>
             <TextField
+              size='small'
               className='input'
               type='number'
               onChange={(e) => handleChange({ value: parseInt(e.target.value), name: 'shipping' })}
@@ -105,6 +108,7 @@ const InvoiceTotalSection = (
           <div className='flex-row space-between'>
             <div className='label'>tax</div>
             <TextField
+              size='small'
               className='input'
               type='number'
               onChange={(e) => handleChange({ value: parseInt(e.target.value), name: 'tax' })}

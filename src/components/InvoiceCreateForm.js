@@ -16,8 +16,10 @@ import CircledIcon from './CircledIcon';
 import DateInput from './FormInputs/DateInput';
 import LineItem from './LineItem';
 import InvoiceTotalSection from './InvoiceTotalSection';
-import { getPreferences } from '../store/preferences';
 import DropdownInput from './FormInputs/DropdownInput';
+import { getPreferences } from '../store/preferences';
+import invoiceValidationSchema from '../invoiceValidationSchema';
+import Alert from './Alert';
 
 const initialState = {
   defaultTerms: null,
@@ -25,14 +27,31 @@ const initialState = {
   discountShown: false,
   shippingShown: false,
   taxShown: false,
-  terms: null,
-  lineItems: [{ name: null, description: null, quantity: null, unit_price: null, itemId: 'item-0', amount: null }],
+  payment_terms: null,
+  line_items: [{
+    name: null,
+    description: null,
+    quantity: null,
+    unit_price: null,
+    itemId: 'item-0',
+    amount: null,
+    errors: {
+      name: false,
+      quantity: false,
+      unit_price: false
+    } }],
   discount: 0,
   discountType: "dollar",
   shipping: 0,
   tax: 0,
-  dueDate: null,
-  itemsCount: 1
+  due_date: null,
+  itemsCount: 1,
+  hasErrors: false,
+  errors: {
+    payment_terms: false,
+    discountType: false,
+    due_date: false
+  }
 }
 
 class InvoiceCreateForm extends React.Component {
@@ -56,7 +75,7 @@ class InvoiceCreateForm extends React.Component {
 
   setDefaultTerms() {
     if (this.props.preferences && this.props.preferences['default-net-terms']) {
-      this.setState({ defaultTerms: this.props.preferences['default-net-terms'] });
+      this.setState({ defaultTerms: this.props.preferences['default-net-terms'], payment_terms: this.props.preferences['default-net-terms'] });
     }
   }
 
@@ -65,50 +84,84 @@ class InvoiceCreateForm extends React.Component {
   }
 
   handleLineItemChange(itemId, target) {
-    let lineItems = this.state.lineItems;
-    lineItems.find((item, i) => {
+    let line_items = this.state.line_items;
+    line_items.find((item, i) => {
       if (item.itemId === itemId) {
-        lineItems[i][target.name] = target.value;
+        line_items[i][target.name] = target.value;
         return true;
       }
     })
-    this.setState({ lineItems: lineItems });
+    this.setState({ line_items: line_items });
   }
 
   async updateLineItemAmount(itemId) {
-    let lineItems = this.state.lineItems;
-    lineItems.find((item, i) => {
+    let line_items = this.state.line_items;
+    line_items.find((item, i) => {
       if (item.itemId === itemId) {
         if (item.quantity !== null && item.unit_price !== null) {
-          lineItems[i]['amount'] =  parseInt(item.quantity) * parseInt(item.unit_price);
+          line_items[i]['amount'] =  parseInt(item.quantity) * parseInt(item.unit_price);
         } else {
-          lineItems[i]['amount'] = 0.00;
+          line_items[i]['amount'] = 0.00;
         }
         return true;
       }
     })
-    await this.setState({ lineItems: lineItems });
+    await this.setState({ line_items: line_items });
   }
 
   addNewLine() {
-    let lineItems = this.state.lineItems;
-    lineItems.push({ name: null, description: null, quantity: null, unit_price: null, itemId: `item-${this.state.itemsCount}`, amount: null });
-    this.setState({ lineItems: lineItems, itemsCount: this.state.itemsCount+1 });
+    let line_items = this.state.line_items;
+    line_items.push({
+      name: null,
+      description: null,
+      quantity: null,
+      unit_price: null,
+      itemId: `item-${this.state.itemsCount}`,
+      amount: null,
+      errors: {
+        name: false,
+        quantity: false,
+        unit_price: false
+      }
+    });
+    this.setState({ line_items: line_items, itemsCount: this.state.itemsCount+1 });
   }
 
   removeLine(itemId) {
-    let lineItems = this.state.lineItems.filter(item => item.itemId !== itemId);
-    this.setState({ lineItems: lineItems });
+    let line_items = this.state.line_items.filter(item => item.itemId !== itemId);
+    this.setState({ line_items: line_items });
   }
 
   showHiddenSection(section) {
     this.setState({ [section]: true });
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
-    console.log('submitting values from state');
-    console.log(this.state);
+
+    const isFormValid = await invoiceValidationSchema.isValid(this.state, {
+      abortEarly: false, // Prevent aborting validation after first error
+    })
+
+    if (isFormValid) {
+      this.setState({ hasErrors: false })
+      console.log('valid!')
+    } else {
+      this.setState({ hasErrors: true })
+      invoiceValidationSchema.validate(this.state, { abortEarly: false }).catch((err) => {
+        let errors = err.inner.reduce((curr, prev) => {
+          return {
+            ...curr,
+            [prev.path]: true
+          }
+        }, {
+          payment_terms: false,
+          discountType: false,
+          due_date: false
+        })
+        this.setState({ errors: errors })
+      }, {})
+    }
   }
 
   render() {
@@ -128,6 +181,7 @@ class InvoiceCreateForm extends React.Component {
             Save
           </Button>
         </div>
+        {this.state.hasErrors && <Alert type={'error'} />}
         <Paper
           variant='outlined'
           className='flex-row space-between form-container'
@@ -136,14 +190,19 @@ class InvoiceCreateForm extends React.Component {
             <CircledIcon iconSrc={calendarIcon} />
             <h3>Payment terms</h3>
           </div>
-          <div className='flex-row'>
+          <div className='flex-row terms-section'>
             <DropdownInput
-              terms={this.state.terms}
+              payment_terms={this.state.payment_terms}
               defaultTerms={this.state.defaultTerms}
               handleChange={this.handleChange}
+              error={this.state.errors.payment_terms}
             />
-            {this.state.terms === 0 && (
-              <DateInput dueDate={this.state.dueDate} handleChange={this.handleChange} />
+            {this.state.payment_terms === 0 && (
+              <DateInput
+                due_date={this.state.due_date}
+                handleChange={this.handleChange}
+                error={this.state.errors.due_date}
+              />
             )}
           </div>
         </Paper>
@@ -174,7 +233,7 @@ class InvoiceCreateForm extends React.Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.lineItems.map((item) => {
+                {this.state.line_items.map((item) => {
                   return (
                     <LineItem
                       key={item.itemId}
@@ -195,7 +254,7 @@ class InvoiceCreateForm extends React.Component {
             discountShown={this.state.discountShown}
             taxShown={this.state.taxShown}
             discountType={this.state.discountType}
-            lineItems={this.state.lineItems}
+            line_items={this.state.line_items}
             tax={this.state.tax}
             discount={this.state.discount}
             shipping={this.state.shipping}

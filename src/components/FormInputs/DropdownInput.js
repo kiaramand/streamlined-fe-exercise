@@ -5,14 +5,15 @@ import {
   Select
 } from '@mui/material';
 
-const DropdownInput = ({ terms, defaultTerms, handleChange, ...other }) => {
+const DropdownInput = ({ payment_terms, defaultTerms, handleChange, error, ...other }) => {
 
   return (
-    <FormControl fullWidth>
+    <FormControl className='dropdown-input' fullWidth size='small'>
       <Select
-        value={terms !== null ? terms : defaultTerms}
-        name='terms'
+        value={payment_terms}
+        name='payment_terms'
         onChange={(e) => handleChange(e.target)}
+        error={error}
       >
         <MenuItem value={7}>{`Net 7 ${defaultTerms === 7 ? '(Default)' : ''}`}</MenuItem>
         <MenuItem value={15}>{`Net 15 ${defaultTerms === 15 ? '(Default)' : ''}`}</MenuItem>
