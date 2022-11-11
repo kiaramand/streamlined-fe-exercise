@@ -2,10 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
-  FormControl,
-  MenuItem,
   Paper,
-  Select,
   Table,
   TableBody,
   TableContainer,
@@ -16,10 +13,11 @@ import {
 import calendarIcon from '../Icons/streamlinehq-calendar-interface-essential-48.SVG';
 import shippingBoxIcon from '../Icons/streamlinehq-shipment-box-shipping-delivery-48.SVG';
 import CircledIcon from './CircledIcon';
-import DateInput from './DateInput';
+import DateInput from './FormInputs/DateInput';
 import LineItem from './LineItem';
 import InvoiceTotalSection from './InvoiceTotalSection';
 import { getPreferences } from '../store/preferences';
+import DropdownInput from './FormInputs/DropdownInput';
 
 const initialState = {
   defaultTerms: null,
@@ -28,11 +26,13 @@ const initialState = {
   shippingShown: false,
   taxShown: false,
   terms: null,
-  lineItems: [{ items: null, description: null, quantity: null, price: null, amount: null }],
-  discount: null,
+  lineItems: [{ name: null, description: null, quantity: null, unit_price: null, itemId: 'item-0', amount: null }],
+  discount: 0,
   discountType: "dollar",
-  shipping: null,
-  tax: null
+  shipping: 0,
+  tax: 0,
+  dueDate: null,
+  itemsCount: 1
 }
 
 class InvoiceCreateForm extends React.Component {
@@ -40,13 +40,13 @@ class InvoiceCreateForm extends React.Component {
     super();
     this.state = initialState;
     this.setDefaultTerms = this.setDefaultTerms.bind(this);
-    this.setTerms = this.setTerms.bind(this);
     this.addNewLine = this.addNewLine.bind(this);
     this.removeLine = this.removeLine.bind(this);
-    this.showDiscount = this.showDiscount.bind(this);
-    this.showShipping = this.showShipping.bind(this);
-    this.showTax = this.showTax.bind(this);
-    this.changeDiscountType = this.changeDiscountType.bind(this);
+    this.showHiddenSection = this.showHiddenSection.bind(this);
+    this.updateLineItemAmount = this.updateLineItemAmount.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleLineItemChange = this.handleLineItemChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   async componentDidMount() {
@@ -60,44 +60,60 @@ class InvoiceCreateForm extends React.Component {
     }
   }
 
-  setTerms(terms) {
-    this.setState({ terms: terms })
+  handleChange(target) {
+    this.setState({ [target.name]: target.value });
+  }
+
+  handleLineItemChange(itemId, target) {
+    let lineItems = this.state.lineItems;
+    lineItems.find((item, i) => {
+      if (item.itemId === itemId) {
+        lineItems[i][target.name] = target.value;
+        return true;
+      }
+    })
+    this.setState({ lineItems: lineItems });
+  }
+
+  async updateLineItemAmount(itemId) {
+    let lineItems = this.state.lineItems;
+    lineItems.find((item, i) => {
+      if (item.itemId === itemId) {
+        if (item.quantity !== null && item.unit_price !== null) {
+          lineItems[i]['amount'] =  parseInt(item.quantity) * parseInt(item.unit_price);
+        } else {
+          lineItems[i]['amount'] = 0.00;
+        }
+        return true;
+      }
+    })
+    await this.setState({ lineItems: lineItems });
   }
 
   addNewLine() {
     let lineItems = this.state.lineItems;
-    lineItems.push({ items: null, description: null, quantity: null, price: null, amount: null });
-    this.setState({ lineItems: lineItems });
+    lineItems.push({ name: null, description: null, quantity: null, unit_price: null, itemId: `item-${this.state.itemsCount}`, amount: null });
+    this.setState({ lineItems: lineItems, itemsCount: this.state.itemsCount+1 });
   }
 
   removeLine(itemId) {
-    let lineItems = this.state.lineItems;
-    lineItems.splice(itemId, 1);
+    let lineItems = this.state.lineItems.filter(item => item.itemId !== itemId);
     this.setState({ lineItems: lineItems });
   }
 
-  showDiscount() {
-    this.setState({ discountShown: true });
+  showHiddenSection(section) {
+    this.setState({ [section]: true });
   }
 
-  showShipping() {
-    this.setState({ shippingShown: true });
-  }
-
-  showTax() {
-    this.setState({ taxShown: true });
-  }
-
-  changeDiscountType(value) {
-    this.setState({ discountType: value});
+  handleSubmit(e) {
+    e.preventDefault();
+    console.log('submitting values from state');
+    console.log(this.state);
   }
 
   render() {
-    const terms = this.state.terms
-    const defaultTerms = this.state.defaultTerms;
-
     return (
-      <div className='invoice-create-form'>
+      <form className='invoice-create-form' onSubmit={this.handleSubmit}>
         <div className='flex-row space-between'>
           <div className='flex-row'>
             <h1>New draft</h1>
@@ -107,6 +123,7 @@ class InvoiceCreateForm extends React.Component {
             variant='contained'
             disableElevation
             className='contained-button'
+            type='submit'
           >
             Save
           </Button>
@@ -120,21 +137,13 @@ class InvoiceCreateForm extends React.Component {
             <h3>Payment terms</h3>
           </div>
           <div className='flex-row'>
-            <FormControl fullWidth>
-              <Select
-                value={terms !== null ? terms : defaultTerms}
-                label='terms'
-                onChange={(e) => this.setTerms(e.target.value)}
-              >
-                <MenuItem value={7}>{`Net 7 ${defaultTerms === 7 ? '(Default)' : ''}`}</MenuItem>
-                <MenuItem value={15}>{`Net 15 ${defaultTerms === 15 ? '(Default)' : ''}`}</MenuItem>
-                <MenuItem value={30}>{`Net 30 ${defaultTerms === 30 ? '(Default)' : ''}`}</MenuItem>
-                <MenuItem value={60}>{`Net 60 ${defaultTerms === 60 ? '(Default)' : ''}`}</MenuItem>
-                <MenuItem value={0}>{`Custom Terms ${defaultTerms === 0 ? '(Default)' : ''}`}</MenuItem>
-              </Select>
-            </FormControl>
+            <DropdownInput
+              terms={this.state.terms}
+              defaultTerms={this.state.defaultTerms}
+              handleChange={this.handleChange}
+            />
             {this.state.terms === 0 && (
-              <DateInput />
+              <DateInput dueDate={this.state.dueDate} handleChange={this.handleChange} />
             )}
           </div>
         </Paper>
@@ -165,9 +174,15 @@ class InvoiceCreateForm extends React.Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.lineItems.map((item, i) => {
+                {this.state.lineItems.map((item) => {
                   return (
-                    <LineItem key={i} itemId={i} removeLine={this.removeLine} />
+                    <LineItem
+                      key={item.itemId}
+                      item={item}
+                      removeLine={this.removeLine}
+                      handleLineItemChange={this.handleLineItemChange}
+                      updateLineItemAmount={this.updateLineItemAmount}
+                    />
                   )
                 })}
               </TableBody>
@@ -175,17 +190,19 @@ class InvoiceCreateForm extends React.Component {
           </TableContainer>
           <div className='clickable-text' onClick={() => this.addNewLine()}>+ Add new line</div>
           <InvoiceTotalSection
-            showShipping={this.showShipping}
-            showDiscount={this.showDiscount}
-            showTax={this.showTax}
+            showHiddenSection={this.showHiddenSection}
             shippingShown={this.state.shippingShown}
             discountShown={this.state.discountShown}
             taxShown={this.state.taxShown}
             discountType={this.state.discountType}
-            changeDiscountType={this.changeDiscountType}
+            lineItems={this.state.lineItems}
+            tax={this.state.tax}
+            discount={this.state.discount}
+            shipping={this.state.shipping}
+            handleChange={this.handleChange}
           />
         </Paper>
-      </div>
+      </form>
     )
   }
 }
