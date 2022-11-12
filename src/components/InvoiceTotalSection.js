@@ -6,12 +6,12 @@ import {
   ToggleButton
 } from '@mui/material';
 
-const calculateTotal = ( discountType, discount, subtotal, shipping, tax ) => {
+const calculateTotal = ( discountType, discount_amount, discount_percentage, subtotal, shipping, tax ) => {
   let total = subtotal;
-  if (discountType === 'percent' && discount > 0) {
-    total = total * ((100 - discount)/100);
+  if (discountType === 'percent' && discount_percentage > 0) {
+    total = total * ((100 - discount_percentage)/100);
   } else if (discountType === 'dollar') {
-    total = total - discount;
+    total = total - discount_amount;
   }
   return total + tax + shipping;
 }
@@ -32,7 +32,8 @@ const InvoiceTotalSection = (
     shippingShown,
     taxShown,
     discountType,
-    discount,
+    discount_amount,
+    discount_percentage,
     shipping,
     tax,
     line_items,
@@ -47,7 +48,7 @@ const InvoiceTotalSection = (
       <div className='flex-column invoice-total-section'>
         <div className='flex-row space-between'>
           <div className='label'>Subtotal</div>
-          <div className='value'>${subtotal}</div>
+          <div className='value'>${subtotal.toFixed(2)}</div>
         </div>
         {discountShown ? (
           <div className='flex-row space-between'>
@@ -56,7 +57,7 @@ const InvoiceTotalSection = (
               <ToggleButtonGroup
                 className='toggle-group'
                 value={discountType}
-                onChange={(e) => handleChange({value: e.target.value, name: 'discountType'})}
+                onChange={(e) => handleChange({value: e.target.value, name: 'discount_type'})}
                 size='small'
               >
                 <ToggleButton value="dollar">
@@ -66,14 +67,27 @@ const InvoiceTotalSection = (
                   %
                 </ToggleButton>
               </ToggleButtonGroup>
-              <TextField
-                size='small'
-                className='input'
-                type='number'
-                inputProps={{ min: 0 }}
-                onChange={(e) => handleChange({ value: Number(e.target.value), name: 'discount'})}
-                InputProps={{ startAdornment: <InputAdornment position="start">{discountType === "dollar" ? "$" : "%"}</InputAdornment> }}
-              />
+              {discountType === 'dollar' ? (
+                <TextField
+                  key='discount_amount'
+                  size='small'
+                  className='input'
+                  type='number'
+                  inputProps={{ min: 0, step: 0.01 }}
+                  onChange={(e) => handleChange({ value: Number(e.target.value), name: 'discount_amount' })}
+                  InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+                />
+              ):(
+                  <TextField
+                    key='discount_percentage'
+                    size='small'
+                    className='input'
+                    type='number'
+                    inputProps={{ min: 0, step: 1 }}
+                    onChange={(e) => handleChange({ value: Number(e.target.value), name: 'discount_percentage' })}
+                    InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
+                  />
+              )}
             </div>
           </div>
         ) : (
@@ -91,8 +105,8 @@ const InvoiceTotalSection = (
               size='small'
               className='input'
               type='number'
-              onChange={(e) => handleChange({ value: Number(e.target.value), name: 'shipping' })}
-              inputProps={{ min: 0 }}
+              onChange={(e) => handleChange({ value: Number(e.target.value), name: 'shipping_amount' })}
+              inputProps={{ min: 0, step: 0.01 }}
               InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
             />
           </div>
@@ -111,8 +125,8 @@ const InvoiceTotalSection = (
               size='small'
               className='input'
               type='number'
-              onChange={(e) => handleChange({ value: Number(e.target.value), name: 'tax' })}
-              inputProps={{ min: 0 }}
+              onChange={(e) => handleChange({ value: Number(e.target.value), name: 'tax_amount' })}
+              inputProps={{ min: 0, step: 0.01 }}
               InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
             />
           </div>
@@ -127,7 +141,7 @@ const InvoiceTotalSection = (
         <hr className='primary-divider' />
         <div className='flex-row space-between'>
           <div className='label'>Total</div>
-          <div className='value'>${calculateTotal(discountType, discount, subtotal, shipping, tax)}</div>
+          <div className='value'>${calculateTotal(discountType, discount_amount, discount_percentage, subtotal, shipping, tax).toFixed(2)}</div>
         </div>
       </div>
     </div>

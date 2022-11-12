@@ -15,7 +15,6 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
           size='small'
           name='name'
           value={item.name}
-          error={item.errors['name']}
           onChange={(e) => handleLineItemChange(item.itemId, e.target)}
         />
       </TableCell>
@@ -32,7 +31,6 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
           size='small'
           name='quantity'
           type='number'
-          error={item.errors['quantity']}
           inputProps={{min: 0, step: 1}}
           value={item.quantity}
           onChange={(e) => {
@@ -46,8 +44,7 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
           size='small'
           name='unit_price'
           type='number'
-          error={item.errors['unit_price']}
-          inputProps={{ min: 0 }}
+          inputProps={{ min: 0, step: 0.01 }}
           value={item.unit_price}
           onChange={(e) => {
             handleLineItemChange(item.itemId, e.target)
@@ -56,7 +53,7 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
         />
       </TableCell>
       <TableCell align='right' >
-        {item.amount}
+        {item.amount && item.amount.toFixed(2)}
       </TableCell>
       <TableCell className='close-cell'>
         <Button className='close-button' onClick={() => removeLine(item.itemId)} >

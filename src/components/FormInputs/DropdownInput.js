@@ -6,7 +6,6 @@ import {
 } from '@mui/material';
 
 const DropdownInput = ({ payment_terms, defaultTerms, handleChange, error, ...other }) => {
-
   return (
     <FormControl className='dropdown-input' fullWidth size='small'>
       <Select
