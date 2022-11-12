@@ -13,28 +13,22 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
       <TableCell>
         <TextField
           size='small'
-          name='name'
-          value={item.name}
-          onChange={(e) => handleLineItemChange(item.itemId, e.target)}
+          onChange={(e) => handleLineItemChange(item.itemId, {name: 'name', value: e.target.value})}
         />
       </TableCell>
       <TableCell>
         <TextField
           size='small'
-          name='description'
-          value={item.description}
-          onChange={(e) => handleLineItemChange(item.itemId, e.target)}
+          onChange={(e) => handleLineItemChange(item.itemId, {name: 'description', value: e.target.value})}
         />
       </TableCell>
       <TableCell align='right' >
         <TextField
           size='small'
-          name='quantity'
           type='number'
           inputProps={{min: 0, step: 1}}
-          value={item.quantity}
           onChange={(e) => {
-            handleLineItemChange(item.itemId, e.target)
+            handleLineItemChange(item.itemId, {name: 'quantity', value: e.target.value})
             updateLineItemAmount(item.itemId)
           }}
         />
@@ -42,12 +36,10 @@ const LineItem = ({ item, removeLine, handleLineItemChange, updateLineItemAmount
       <TableCell align='right' >
         <TextField
           size='small'
-          name='unit_price'
           type='number'
           inputProps={{ min: 0, step: 0.01 }}
-          value={item.unit_price}
           onChange={(e) => {
-            handleLineItemChange(item.itemId, e.target)
+            handleLineItemChange(item.itemId, {name: 'unit_price', value: e.target.value})
             updateLineItemAmount(item.itemId)
           }}
         />

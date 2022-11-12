@@ -9,7 +9,7 @@ const DropdownInput = ({ payment_terms, defaultTerms, handleChange, error, ...ot
   return (
     <FormControl className='dropdown-input' fullWidth size='small'>
       <Select
-        value={payment_terms}
+        value={payment_terms || ''}
         name='payment_terms'
         onChange={(e) => handleChange(e.target)}
         error={error}

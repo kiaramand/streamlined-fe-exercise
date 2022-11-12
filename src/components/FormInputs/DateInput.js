@@ -10,7 +10,6 @@ const DateInput = ({ due_date, handleChange, error, ...other }) => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         className='date-input'
-        value={due_date}
         onChange={(e) => handleChange({value: dayjs(e).format(), name: 'due_date'})}
         renderInput={(params) => <TextField  {...params} size='small' error={error} />}
       />
