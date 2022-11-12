@@ -176,7 +176,6 @@ class InvoiceCreateForm extends React.Component {
       this.setState({ hasErrors: false, showSuccess: true })
       let output = this.formatValues(this.state.values)
       console.log(JSON.stringify(output))
-      console.log(this.state)
     } else {
       this.setState({ hasErrors: true })
       invoiceValidationSchema.validate(this.state.values, { abortEarly: false }).catch((err) => {

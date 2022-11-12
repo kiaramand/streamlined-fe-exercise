@@ -1,33 +1,38 @@
-# Getting Started with Create React App
+# Kiara Anderson's Streamlined Submission
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Running the app
 
 ### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+You may need to run `npm install`
 
-### notes
+Upon "saving" the form, an output is logged to the console. I recommend pasting this output to [JSON Formatter][https://jsonformatter.org/json-pretty-print] for easier viewing.
 
-thought about using react-hook-form (would have been more performant so would prefer this in reality) - in reality would use something like this or react-hook-form
+### Notes
 
-have feedback on design
+I created this project with [Create React App](https://github.com/facebook/create-react-app).
 
-would likely want to be persisting state
+When I started this assignment, I decided would like to build the form "from scratch" rather than using a package (like react-hook-form or formik). Would I do this in a realistic production application scenario? No.
+I chose to do this for this exercise because it is so small scale that it felt like a good oportunity to refresh on React basics. This did ultimately end up biting me a bit in the end - form validation could have been much neater with on of the previously mentioned packages. Since I also chose to time box this activity, there is one feature that suffered: though the form validates and only submits when valid, errors within the invoice line items do not highlight the affected input. Again, due to time boxing, a few small visual design specifics may also differ slightly.
 
-would also include tests
+A few other things that I would do differently in a real scenario:
+ - Include unit tests
+ - Format all numbers to proper decimals
+ - Make components more generic to allow for re-use
+ - Use MuI's theme provider to style components
+ - Include accessibility features
+ - check propTypes
+ - likely persist aspects of the state in local or session storage
 
-would use mui theme for styling
 
-add accessibility features
+### Assumptions
 
-add proptypes
+In creating this application, I made a number of assumptions. A few are listed below.
+ - This application is meant to be used on desktop only
+ - Negative totals are acceptable (assuming it is possible to be giving a refund)
+ - Any unassigned value should be submitted as `null`
+ - The title of "New draft" is not editable
 
-### assumptions
-
-negative totals are okay as it's possible a refund is being issued
-
-only desktop
