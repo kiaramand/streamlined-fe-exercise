@@ -2,16 +2,14 @@
 
 ## Running the app
 
-### `npm start`
-
-Runs the app in the development mode.\
+`npm start` Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 You may need to run `npm install`
 
 Upon "saving" the form, an output is logged to the console. I recommend pasting this output to [JSON Formatter][https://jsonformatter.org/json-pretty-print] for easier viewing.
 
-### Notes
+## Notes
 
 I created this project with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -28,7 +26,7 @@ A few other things that I would do differently in a real scenario:
  - likely persist aspects of the state in local or session storage
 
 
-### Assumptions
+## Assumptions
 
 In creating this application, I made a number of assumptions. A few are listed below.
  - This application is meant to be used on desktop only
